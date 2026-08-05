@@ -1,0 +1,17 @@
+streamlit
+python-dotenv
+torch
+torchvision
+transformers
+accelerate
+safetensors
+huggingface-hub
+Pillow
+opencv-python
+sentencepiece
+tokenizers
+pandas
+numpy
+openpyxl
+requests
+tqdm
