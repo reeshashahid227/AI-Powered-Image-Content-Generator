@@ -12,6 +12,7 @@ def load_model():
     )
 
     print("Processor loaded!")
+
     print("Loading BLIP model...")
 
     model = BlipForConditionalGeneration.from_pretrained(
