@@ -3,7 +3,7 @@ from PIL import Image
 
 from src.model import load_model
 from src.caption import create_caption
-from src.content_generator import generate_custom_caption
+from src.content_generator import generate_custom_captions
 
 
 # --------------------------------------------------
@@ -11,7 +11,7 @@ from src.content_generator import generate_custom_caption
 # --------------------------------------------------
 
 st.set_page_config(
-    page_title="AI-Powered Image Content Generator",
+    page_title="AI-Powered Image Caption Generator",
     page_icon="🖼️",
     layout="wide"
 )
@@ -21,11 +21,10 @@ st.set_page_config(
 # Title
 # --------------------------------------------------
 
-st.title("🖼️ AI-Powered Image Content Generator")
+st.title("🖼️ AI-Powered Image Caption Generator")
 
 st.subheader(
-    "Generate captions, descriptions, hashtags, keywords, "
-    "and alt text from uploaded images using pretrained AI models."
+    "Generate captions from uploaded images using pretrained AI models."
 )
 
 st.markdown("---")
@@ -35,11 +34,10 @@ st.markdown("---")
 # Sidebar
 # --------------------------------------------------
 
-st.sidebar.title("AI-Powered Image Content Generator")
+st.sidebar.title("AI-Powered Image Caption Generator")
 
 st.sidebar.info(
-    "Upload an image and generate AI-powered captions, "
-    "descriptions, hashtags, keywords, and alt text."
+    "Upload an image and generate AI-powered captions."
 )
 
 
@@ -126,6 +124,14 @@ caption_language = st.sidebar.selectbox(
 )
 
 
+num_captions = st.sidebar.slider(
+    "Number of Caption Suggestions",
+    min_value=1,
+    max_value=5,
+    value=3
+)
+
+
 # --------------------------------------------------
 # Image Upload
 # --------------------------------------------------
@@ -196,13 +202,13 @@ if uploaded_file is not None:
 
     with col2:
 
-        st.markdown("## 🤖 AI Generated Content")
+        st.markdown("## 🤖 AI Generated Captions")
 
 
         # Generate Button
 
         if st.button(
-            "🚀 Generate AI Content",
+            "🚀 Generate AI Captions ",
             use_container_width=True
         ):
 
@@ -242,12 +248,13 @@ if uploaded_file is not None:
                     "✨ Creating customized caption..."
                 ):
 
-                    final_caption = generate_custom_caption(
-                        caption=base_caption,
-                        style=caption_style,
-                        tone=caption_tone,
-                        language=caption_language
-                    )
+                    captions = generate_custom_captions(
+                    caption=base_caption,
+                    style=caption_style,
+                    tone=caption_tone,
+                    language=caption_language,
+                    num_captions=num_captions
+)
 
 
                 # ------------------------------------------
@@ -255,7 +262,7 @@ if uploaded_file is not None:
                 # ------------------------------------------
 
                 st.success(
-                    "✅ AI content generated successfully!"
+                    "✅ AI captions generated successfully!"
                 )
 
 
@@ -270,10 +277,15 @@ if uploaded_file is not None:
 
 
                 # Customized Caption
+                st.subheader("✨ AI Caption Suggestions")
 
-                st.subheader("✨ Customized Caption")
+                caption_lines = captions.split("\n")
 
-                st.success(final_caption)
+                for line in caption_lines:
+
+                     if line.strip():
+
+                        st.success(line)
 
 
                 # Selected Settings

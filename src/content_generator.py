@@ -5,31 +5,27 @@ from groq import Groq
 load_dotenv()
 
 
-def generate_custom_caption(
+def generate_custom_captions(
     caption,
     style,
     tone,
-    language
+    language,
+    num_captions
 ):
-
     api_key = os.getenv("GROQ_API_KEY")
 
     if not api_key:
-        raise ValueError(
-            "GROQ_API_KEY not found in .env file."
-        )
+        raise ValueError("GROQ_API_KEY not found.")
 
     client = Groq(api_key=api_key)
 
     prompt = f"""
 You are an AI content writer.
 
-Create a customized image caption based on the information below.
-
-Original image caption:
+Original Image Caption:
 {caption}
 
-Caption style:
+Style:
 {style}
 
 Tone:
@@ -38,14 +34,17 @@ Tone:
 Language:
 {language}
 
+Generate {num_captions} different captions.
+
 Requirements:
-- Keep the caption relevant to the image.
-- Follow the requested style.
-- Follow the requested tone.
-- Write entirely in the requested language.
-- Keep it concise and natural.
-- Do not explain your answer.
-- Return only the final caption.
+- Every caption should be unique.
+- Keep captions concise.
+- Keep captions relevant to the image.
+- Follow the selected style.
+- Follow the selected tone.
+- Write completely in {language}.
+- Return ONLY the captions.
+- Number them from 1.
 """
 
     response = client.chat.completions.create(
@@ -56,8 +55,8 @@ Requirements:
                 "content": prompt
             }
         ],
-        temperature=0.7,
-        max_tokens=100
+        temperature=0.8,
+        max_tokens=300
     )
 
     return response.choices[0].message.content.strip()
