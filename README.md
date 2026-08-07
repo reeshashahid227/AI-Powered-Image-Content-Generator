@@ -78,11 +78,9 @@ AI-Powered-Image-Caption-Generator/
 ├── .env
 │
 ├── src/
-│   ├── model.py
-│   ├── caption.py
-│   └── content_generator.py
-│
-└── exports/
+   ├── model.py
+   ├── caption.py
+   └── content_generator.py
 ```
 
 ---
