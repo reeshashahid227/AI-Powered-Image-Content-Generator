@@ -372,6 +372,31 @@ if uploaded_images:
                         if line.strip():
 
                             st.success(line)
+                        # ==================================================
+                        # EXPORT AI CAPTION
+                        # ==================================================
+
+                        export_text = f"""AI Caption Generator
+
+                        Image:
+                            {uploaded_file.name}
+
+                        Original BLIP Caption:
+                            {base_caption}
+
+                        AI Caption Suggestions:
+                            {captions}
+"""
+
+                    file_name = f"AI_Caption_{uploaded_file.name.rsplit('.', 1)[0]}.txt"
+
+                    st.download_button(
+                        label="📥 Export AI Caption",
+                        data=export_text,
+                        file_name=file_name,
+                        mime="text/plain"
+)
+
 
 
                     # ---------------------------------------------
