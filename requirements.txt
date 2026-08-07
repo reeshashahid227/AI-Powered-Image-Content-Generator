@@ -3,4 +3,5 @@ Transformers
 BLIP 
 Pillow
 Groq 
+Torch
 dotenv
