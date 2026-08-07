@@ -1,4 +1,3 @@
-
 import streamlit as st
 from PIL import Image
 
@@ -174,7 +173,7 @@ if uploaded_images:
             st.image(
                 image,
                 caption=uploaded_file.name,
-                use_container_width=True
+                width="stretch"
             )
 
 
@@ -187,7 +186,7 @@ if uploaded_images:
 
     if st.button(
         "🚀 Generate AI Captions",
-        use_container_width=True
+        width="stretch"
     ):
 
         try:
@@ -269,7 +268,7 @@ if uploaded_images:
                     st.image(
                         image,
                         caption=uploaded_file.name,
-                        use_container_width=True
+                        width="stretch"
                     )
 
 
@@ -370,33 +369,36 @@ if uploaded_images:
                     for line in caption_lines:
 
                         if line.strip():
-
                             st.success(line)
-                        # ==================================================
-                        # EXPORT AI CAPTION
-                        # ==================================================
 
-                        export_text = f"""AI Caption Generator
 
-                        Image:
-                            {uploaded_file.name}
+                    # ==================================================
+                    # EXPORT AI CAPTION
+                    # ==================================================
 
-                        Original BLIP Caption:
-                            {base_caption}
+                    export_text = f"""AI Caption Generator
 
-                        AI Caption Suggestions:
-                            {captions}
+Image:
+{uploaded_file.name}
+
+Original BLIP Caption:
+{base_caption}
+
+AI Caption Suggestions:
+{captions}
 """
 
-                    file_name = f"AI_Caption_{uploaded_file.name.rsplit('.', 1)[0]}.txt"
+                    file_name = (
+                        f"AI_Caption_"
+                        f"{uploaded_file.name.rsplit('.', 1)[0]}.txt"
+                    )
 
                     st.download_button(
                         label="📥 Export AI Caption",
                         data=export_text,
                         file_name=file_name,
                         mime="text/plain"
-)
-
+                    )
 
 
                     # ---------------------------------------------
@@ -472,5 +474,4 @@ st.markdown("---")
 st.caption(
     "AI-Powered Image Content Generator | "
     "Built with Python, Streamlit, BLIP & Groq AI"
-)
-
+    )
