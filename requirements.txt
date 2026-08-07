@@ -2,7 +2,6 @@ Python
 Streamlit
 Transformers
 BLIP 
-PyTorch
 Pillow
 Groq 
 dotenv

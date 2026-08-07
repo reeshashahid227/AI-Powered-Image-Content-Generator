@@ -62,10 +62,9 @@ st.sidebar.markdown("### 📌 Project Features")
 
 st.sidebar.write("🖼️ Multiple Image Upload")
 st.sidebar.write("📝 AI Caption Generation")
-st.sidebar.write("📖 Image Description")
-st.sidebar.write("🏷️ Keywords")
-st.sidebar.write("#️⃣ Hashtags")
-st.sidebar.write("♿ Alt Text")
+st.sidebar.write("✨ AI Caption Enhancement")
+st.sidebar.write("📥 Caption Export")
+
 
 st.sidebar.markdown("---")
 
@@ -79,7 +78,6 @@ st.sidebar.markdown("### 👨‍💻 Technology")
 st.sidebar.write("• Python")
 st.sidebar.write("• Streamlit")
 st.sidebar.write("• Transformers")
-st.sidebar.write("• PyTorch")
 st.sidebar.write("• Pillow")
 st.sidebar.write("• Groq AI")
 
@@ -156,17 +154,22 @@ if uploaded_images:
         f"✅ {len(uploaded_images)} image(s) uploaded successfully!"
     )
 
-    # --------------------------------------------------------
-    # Preview Uploaded Images
-    # --------------------------------------------------------
+
+    # ========================================================
+    # PREVIEW UPLOADED IMAGES
+    # ========================================================
 
     st.markdown("## 🖼️ Uploaded Images")
 
     preview_columns = st.columns(3)
 
+
     for i, uploaded_file in enumerate(uploaded_images):
 
-        image = Image.open(uploaded_file).convert("RGB")
+        image = Image.open(
+            uploaded_file
+        ).convert("RGB")
+
 
         with preview_columns[i % 3]:
 
@@ -191,9 +194,9 @@ if uploaded_images:
 
         try:
 
-            # ------------------------------------------------
+            # =================================================
             # STEP 1 - LOAD BLIP MODEL
-            # ------------------------------------------------
+            # =================================================
 
             with st.spinner(
                 "🤖 Loading BLIP model..."
@@ -202,14 +205,19 @@ if uploaded_images:
                 processor, model = load_model()
 
 
-            st.success("✅ BLIP model loaded successfully!")
+            st.success(
+                "✅ BLIP model loaded successfully!"
+            )
 
 
-            # ------------------------------------------------
+            # =================================================
             # PROGRESS INDICATOR
-            # ------------------------------------------------
+            # =================================================
 
-            st.markdown("## ⚙️ Processing Images")
+            st.markdown(
+                "## ⚙️ Processing Images"
+            )
+
 
             progress_bar = st.progress(0)
 
@@ -222,10 +230,13 @@ if uploaded_images:
             # PROCESS EACH IMAGE
             # =================================================
 
-            for i, uploaded_file in enumerate(uploaded_images):
+            for i, uploaded_file in enumerate(
+                uploaded_images
+            ):
+
 
                 # ---------------------------------------------
-                # Open Image
+                # OPEN IMAGE
                 # ---------------------------------------------
 
                 image = Image.open(
@@ -234,27 +245,32 @@ if uploaded_images:
 
 
                 # ---------------------------------------------
-                # Progress Status
+                # STATUS
                 # ---------------------------------------------
 
                 status_text.write(
-                    f"🔄 Processing image {i + 1} of {total_images}: "
+                    f"🔄 Processing image "
+                    f"{i + 1} of {total_images}: "
                     f"{uploaded_file.name}"
                 )
 
 
                 # ---------------------------------------------
-                # Create Result Section
+                # RESULT SECTION
                 # ---------------------------------------------
 
                 st.markdown("---")
 
+
                 st.markdown(
-                    f"## 🖼️ Image {i + 1}: {uploaded_file.name}"
+                    f"## 🖼️ Image {i + 1}: "
+                    f"{uploaded_file.name}"
                 )
 
 
-                col1, col2 = st.columns([1, 1])
+                col1, col2 = st.columns(
+                    [1, 1]
+                )
 
 
                 # =================================================
@@ -263,7 +279,10 @@ if uploaded_images:
 
                 with col1:
 
-                    st.markdown("### 🖼️ Image Preview")
+                    st.markdown(
+                        "### 🖼️ Image Preview"
+                    )
+
 
                     st.image(
                         image,
@@ -273,32 +292,46 @@ if uploaded_images:
 
 
                     # ---------------------------------------------
-                    # Image Information
+                    # IMAGE INFORMATION
                     # ---------------------------------------------
 
-                    st.markdown("### 📄 Image Information")
+                    st.markdown(
+                        "### 📄 Image Information"
+                    )
+
 
                     st.write(
-                        f"**Filename:** {uploaded_file.name}"
+                        f"**Filename:** "
+                        f"{uploaded_file.name}"
                     )
+
 
                     st.write(
                         f"**Resolution:** "
                         f"{image.width} × {image.height}"
                     )
 
+
                     st.write(
-                        f"**Format:** {image.format}"
+                        f"**Format:** "
+                        f"{image.format}"
                     )
 
+
                     st.write(
-                        f"**Color Mode:** {image.mode}"
+                        f"**Color Mode:** "
+                        f"{image.mode}"
                     )
 
-                    size_kb = uploaded_file.size / 1024
+
+                    size_kb = (
+                        uploaded_file.size / 1024
+                    )
+
 
                     st.write(
-                        f"**File Size:** {size_kb:.2f} KB"
+                        f"**File Size:** "
+                        f"{size_kb:.2f} KB"
                     )
 
 
@@ -329,14 +362,17 @@ if uploaded_images:
 
 
                     # ---------------------------------------------
-                    # Original BLIP Caption
+                    # ORIGINAL BLIP CAPTION
                     # ---------------------------------------------
 
                     st.subheader(
                         "🤖 Original BLIP Caption"
                     )
 
-                    st.info(base_caption)
+
+                    st.info(
+                        base_caption
+                    )
 
 
                     # ---------------------------------------------
@@ -357,24 +393,36 @@ if uploaded_images:
 
 
                     # ---------------------------------------------
-                    # Customized Captions
+                    # CUSTOMIZED CAPTIONS
                     # ---------------------------------------------
 
                     st.subheader(
                         "✨ AI Caption Suggestions"
                     )
 
-                    caption_lines = captions.split("\n")
+
+                    caption_lines = captions.split(
+                        "\n"
+                    )
+
 
                     for line in caption_lines:
 
                         if line.strip():
-                            st.success(line)
+
+                            st.success(
+                                line
+                            )
 
 
-                    # ==================================================
+                    # =================================================
                     # EXPORT AI CAPTION
-                    # ==================================================
+                    # =================================================
+
+                    st.markdown(
+                        "### 📥 Export Caption"
+                    )
+
 
                     export_text = f"""AI Caption Generator
 
@@ -386,12 +434,19 @@ Original BLIP Caption:
 
 AI Caption Suggestions:
 {captions}
+
+Caption Settings:
+Style: {caption_style}
+Tone: {caption_tone}
+Language: {caption_language}
 """
+
 
                     file_name = (
                         f"AI_Caption_"
                         f"{uploaded_file.name.rsplit('.', 1)[0]}.txt"
                     )
+
 
                     st.download_button(
                         label="📥 Export AI Caption",
@@ -402,32 +457,40 @@ AI Caption Suggestions:
 
 
                     # ---------------------------------------------
-                    # Selected Settings
+                    # SELECTED SETTINGS
                     # ---------------------------------------------
 
                     st.markdown(
                         "### ⚙️ Selected Settings"
                     )
 
-                    st.write(
-                        f"**Style:** {caption_style}"
-                    )
 
                     st.write(
-                        f"**Tone:** {caption_tone}"
-                    )
-
-                    st.write(
-                        f"**Language:** {caption_language}"
+                        f"**Style:** "
+                        f"{caption_style}"
                     )
 
 
+                    st.write(
+                        f"**Tone:** "
+                        f"{caption_tone}"
+                    )
 
-                # ---------------------------------------------
+
+                    st.write(
+                        f"**Language:** "
+                        f"{caption_language}"
+                    )
+
+
+                # =================================================
                 # UPDATE PROGRESS
-                # ---------------------------------------------
+                # =================================================
 
-                progress_value = (i + 1) / total_images
+                progress_value = (
+                    (i + 1) / total_images
+                )
+
 
                 progress_bar.progress(
                     progress_value
@@ -439,13 +502,19 @@ AI Caption Suggestions:
             # =================================================
 
             status_text.success(
-                f"✅ Completed! {total_images} image(s) processed."
+                f"✅ Completed! "
+                f"{total_images} image(s) processed."
             )
+
 
             st.success(
                 "🎉 All AI captions generated successfully!"
             )
 
+
+        # =====================================================
+        # ERROR HANDLING
+        # =====================================================
 
         except Exception as e:
 
@@ -471,7 +540,8 @@ else:
 
 st.markdown("---")
 
+
 st.caption(
     "AI-Powered Image Content Generator | "
     "Built with Python, Streamlit, BLIP & Groq AI"
-    )
+)
