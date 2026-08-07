@@ -1,3 +1,4 @@
+
 import streamlit as st
 from PIL import Image
 
@@ -6,9 +7,9 @@ from src.caption import create_caption
 from src.content_generator import generate_custom_captions
 
 
-# --------------------------------------------------
-# Page Configuration
-# --------------------------------------------------
+# ============================================================
+# PAGE CONFIGURATION
+# ============================================================
 
 st.set_page_config(
     page_title="AI-Powered Image Caption Generator",
@@ -17,9 +18,9 @@ st.set_page_config(
 )
 
 
-# --------------------------------------------------
-# Title
-# --------------------------------------------------
+# ============================================================
+# TITLE
+# ============================================================
 
 st.title("🖼️ AI-Powered Image Caption Generator")
 
@@ -30,18 +31,20 @@ st.subheader(
 st.markdown("---")
 
 
-# --------------------------------------------------
-# Sidebar
-# --------------------------------------------------
+# ============================================================
+# SIDEBAR
+# ============================================================
 
 st.sidebar.title("AI-Powered Image Caption Generator")
 
 st.sidebar.info(
-    "Upload an image and generate AI-powered captions."
+    "Upload one or multiple images and generate AI-powered captions."
 )
 
 
+# ------------------------------------------------------------
 # Supported Formats
+# ------------------------------------------------------------
 
 st.sidebar.markdown("### 📁 Supported Formats")
 
@@ -49,26 +52,28 @@ st.sidebar.write("✔ JPG")
 st.sidebar.write("✔ JPEG")
 st.sidebar.write("✔ PNG")
 
-
 st.sidebar.markdown("---")
 
 
+# ------------------------------------------------------------
 # Project Features
+# ------------------------------------------------------------
 
 st.sidebar.markdown("### 📌 Project Features")
 
-st.sidebar.write("🖼️ Image Upload")
+st.sidebar.write("🖼️ Multiple Image Upload")
 st.sidebar.write("📝 AI Caption Generation")
 st.sidebar.write("📖 Image Description")
 st.sidebar.write("🏷️ Keywords")
 st.sidebar.write("#️⃣ Hashtags")
 st.sidebar.write("♿ Alt Text")
 
-
 st.sidebar.markdown("---")
 
 
+# ------------------------------------------------------------
 # Technology
+# ------------------------------------------------------------
 
 st.sidebar.markdown("### 👨‍💻 Technology")
 
@@ -79,13 +84,12 @@ st.sidebar.write("• PyTorch")
 st.sidebar.write("• Pillow")
 st.sidebar.write("• Groq AI")
 
-
 st.sidebar.markdown("---")
 
 
-# --------------------------------------------------
-# Phase 4 - Caption Settings
-# --------------------------------------------------
+# ============================================================
+# CAPTION SETTINGS
+# ============================================================
 
 st.sidebar.markdown("### 🎨 Caption Settings")
 
@@ -132,232 +136,311 @@ num_captions = st.sidebar.slider(
 )
 
 
-# --------------------------------------------------
-# Image Upload
-# --------------------------------------------------
+# ============================================================
+# MULTIPLE IMAGE UPLOAD
+# ============================================================
 
-uploaded_file = st.file_uploader(
-    "📤 Upload an Image",
-    type=["jpg", "jpeg", "png"]
+uploaded_images = st.file_uploader(
+    "📤 Upload Images",
+    type=["jpg", "jpeg", "png"],
+    accept_multiple_files=True
 )
 
 
-# --------------------------------------------------
-# Main Content
-# --------------------------------------------------
+# ============================================================
+# IF IMAGES ARE UPLOADED
+# ============================================================
 
-if uploaded_file is not None:
+if uploaded_images:
 
-    # Open image
-    image = Image.open(uploaded_file).convert("RGB")
+    st.success(
+        f"✅ {len(uploaded_images)} image(s) uploaded successfully!"
+    )
 
-    col1, col2 = st.columns([1, 1])
+    # --------------------------------------------------------
+    # Preview Uploaded Images
+    # --------------------------------------------------------
 
+    st.markdown("## 🖼️ Uploaded Images")
 
-    # ==================================================
-    # LEFT COLUMN
-    # ==================================================
+    preview_columns = st.columns(3)
 
-    with col1:
+    for i, uploaded_file in enumerate(uploaded_images):
 
-        st.markdown("## 🖼️ Image Preview")
+        image = Image.open(uploaded_file).convert("RGB")
 
-        st.image(
-            image,
-            caption="Uploaded Image",
-            use_container_width=True
-        )
+        with preview_columns[i % 3]:
 
-
-        # Image Information
-
-        st.markdown("## 📄 Image Information")
-
-        st.write(
-            f"**Filename:** {uploaded_file.name}"
-        )
-
-        st.write(
-            f"**Resolution:** {image.width} × {image.height}"
-        )
-
-        st.write(
-            f"**Format:** {image.format}"
-        )
-
-        st.write(
-            f"**Color Mode:** {image.mode}"
-        )
-
-        size_kb = uploaded_file.size / 1024
-
-        st.write(
-            f"**File Size:** {size_kb:.2f} KB"
-        )
+            st.image(
+                image,
+                caption=uploaded_file.name,
+                use_container_width=True
+            )
 
 
-    # ==================================================
-    # RIGHT COLUMN
-    # ==================================================
-
-    with col2:
-
-        st.markdown("## 🤖 AI Generated Captions")
+    st.markdown("---")
 
 
-        # Generate Button
+    # ========================================================
+    # GENERATE BUTTON
+    # ========================================================
 
-        if st.button(
-            "🚀 Generate AI Captions ",
-            use_container_width=True
-        ):
+    if st.button(
+        "🚀 Generate AI Captions",
+        use_container_width=True
+    ):
 
-            try:
+        try:
 
-                # ------------------------------------------
-                # STEP 1 - Load BLIP Model
-                # ------------------------------------------
+            # ------------------------------------------------
+            # STEP 1 - LOAD BLIP MODEL
+            # ------------------------------------------------
 
-                with st.spinner(
-                    "🤖 Loading BLIP model..."
-                ):
+            with st.spinner(
+                "🤖 Loading BLIP model..."
+            ):
 
-                    processor, model = load_model()
+                processor, model = load_model()
 
 
-                # ------------------------------------------
-                # STEP 2 - Generate Basic Caption
-                # ------------------------------------------
+            st.success("✅ BLIP model loaded successfully!")
 
-                with st.spinner(
-                    "🖼️ Understanding image..."
-                ):
 
-                    base_caption = create_caption(
+            # ------------------------------------------------
+            # PROGRESS INDICATOR
+            # ------------------------------------------------
+
+            st.markdown("## ⚙️ Processing Images")
+
+            progress_bar = st.progress(0)
+
+            status_text = st.empty()
+
+            total_images = len(uploaded_images)
+
+
+            # =================================================
+            # PROCESS EACH IMAGE
+            # =================================================
+
+            for i, uploaded_file in enumerate(uploaded_images):
+
+                # ---------------------------------------------
+                # Open Image
+                # ---------------------------------------------
+
+                image = Image.open(
+                    uploaded_file
+                ).convert("RGB")
+
+
+                # ---------------------------------------------
+                # Progress Status
+                # ---------------------------------------------
+
+                status_text.write(
+                    f"🔄 Processing image {i + 1} of {total_images}: "
+                    f"{uploaded_file.name}"
+                )
+
+
+                # ---------------------------------------------
+                # Create Result Section
+                # ---------------------------------------------
+
+                st.markdown("---")
+
+                st.markdown(
+                    f"## 🖼️ Image {i + 1}: {uploaded_file.name}"
+                )
+
+
+                col1, col2 = st.columns([1, 1])
+
+
+                # =================================================
+                # LEFT COLUMN
+                # =================================================
+
+                with col1:
+
+                    st.markdown("### 🖼️ Image Preview")
+
+                    st.image(
                         image,
-                        processor,
-                        model
+                        caption=uploaded_file.name,
+                        use_container_width=True
                     )
 
 
-                # ------------------------------------------
-                # STEP 3 - Groq AI
-                # ------------------------------------------
+                    # ---------------------------------------------
+                    # Image Information
+                    # ---------------------------------------------
 
-                with st.spinner(
-                    "✨ Creating customized caption..."
-                ):
+                    st.markdown("### 📄 Image Information")
 
-                    captions = generate_custom_captions(
-                    caption=base_caption,
-                    style=caption_style,
-                    tone=caption_tone,
-                    language=caption_language,
-                    num_captions=num_captions
-)
+                    st.write(
+                        f"**Filename:** {uploaded_file.name}"
+                    )
+
+                    st.write(
+                        f"**Resolution:** "
+                        f"{image.width} × {image.height}"
+                    )
+
+                    st.write(
+                        f"**Format:** {image.format}"
+                    )
+
+                    st.write(
+                        f"**Color Mode:** {image.mode}"
+                    )
+
+                    size_kb = uploaded_file.size / 1024
+
+                    st.write(
+                        f"**File Size:** {size_kb:.2f} KB"
+                    )
 
 
-                # ------------------------------------------
-                # Results
-                # ------------------------------------------
+                # =================================================
+                # RIGHT COLUMN
+                # =================================================
 
-                st.success(
-                    "✅ AI captions generated successfully!"
+                with col2:
+
+                    st.markdown(
+                        "### 🤖 AI Generated Captions"
+                    )
+
+
+                    # ---------------------------------------------
+                    # STEP 2 - BLIP CAPTION
+                    # ---------------------------------------------
+
+                    with st.spinner(
+                        "🖼️ Understanding image..."
+                    ):
+
+                        base_caption = create_caption(
+                            image,
+                            processor,
+                            model
+                        )
+
+
+                    # ---------------------------------------------
+                    # Original BLIP Caption
+                    # ---------------------------------------------
+
+                    st.subheader(
+                        "🤖 Original BLIP Caption"
+                    )
+
+                    st.info(base_caption)
+
+
+                    # ---------------------------------------------
+                    # STEP 3 - GROQ CUSTOM CAPTIONS
+                    # ---------------------------------------------
+
+                    with st.spinner(
+                        "✨ Creating customized captions..."
+                    ):
+
+                        captions = generate_custom_captions(
+                            caption=base_caption,
+                            style=caption_style,
+                            tone=caption_tone,
+                            language=caption_language,
+                            num_captions=num_captions
+                        )
+
+
+                    # ---------------------------------------------
+                    # Customized Captions
+                    # ---------------------------------------------
+
+                    st.subheader(
+                        "✨ AI Caption Suggestions"
+                    )
+
+                    caption_lines = captions.split("\n")
+
+                    for line in caption_lines:
+
+                        if line.strip():
+
+                            st.success(line)
+
+
+                    # ---------------------------------------------
+                    # Selected Settings
+                    # ---------------------------------------------
+
+                    st.markdown(
+                        "### ⚙️ Selected Settings"
+                    )
+
+                    st.write(
+                        f"**Style:** {caption_style}"
+                    )
+
+                    st.write(
+                        f"**Tone:** {caption_tone}"
+                    )
+
+                    st.write(
+                        f"**Language:** {caption_language}"
+                    )
+
+
+
+                # ---------------------------------------------
+                # UPDATE PROGRESS
+                # ---------------------------------------------
+
+                progress_value = (i + 1) / total_images
+
+                progress_bar.progress(
+                    progress_value
                 )
 
 
-                st.markdown("---")
+            # =================================================
+            # COMPLETED
+            # =================================================
+
+            status_text.success(
+                f"✅ Completed! {total_images} image(s) processed."
+            )
+
+            st.success(
+                "🎉 All AI captions generated successfully!"
+            )
 
 
-                # BLIP Caption
+        except Exception as e:
 
-                st.subheader("🤖 Original BLIP Caption")
-
-                st.info(base_caption)
-
-
-                # Customized Caption
-                st.subheader("✨ AI Caption Suggestions")
-
-                caption_lines = captions.split("\n")
-
-                for line in caption_lines:
-
-                     if line.strip():
-
-                        st.success(line)
+            st.error(
+                f"❌ Something went wrong: {e}"
+            )
 
 
-                # Selected Settings
-
-                st.markdown("### ⚙️ Selected Settings")
-
-                st.write(
-                    f"**Style:** {caption_style}"
-                )
-
-                st.write(
-                    f"**Tone:** {caption_tone}"
-                )
-
-                st.write(
-                    f"**Language:** {caption_language}"
-                )
-
-
-                # Future Features
-
-                st.markdown("---")
-
-                st.subheader("📖 Description")
-
-                st.info(
-                    "Description generation will be implemented in the next phase."
-                )
-
-
-                st.subheader("🏷️ Keywords")
-
-                st.info(
-                    "Keyword generation will be implemented in the next phase."
-                )
-
-
-                st.subheader("#️⃣ Hashtags")
-
-                st.info(
-                    "Hashtag generation will be implemented in the next phase."
-                )
-
-
-                st.subheader("♿ Alt Text")
-
-                st.info(
-                    "Alt text generation will be implemented in the next phase."
-                )
-
-
-            except Exception as e:
-
-                st.error(
-                    f"❌ Something went wrong: {e}"
-                )
-
-
-# --------------------------------------------------
-# No Image Uploaded
-# --------------------------------------------------
+# ============================================================
+# NO IMAGE UPLOADED
+# ============================================================
 
 else:
 
-    st.warning(
-        "📤 Please upload an image to begin."
+    st.info(
+        "📤 Please upload one or more images to begin."
     )
 
 
-# --------------------------------------------------
-# Footer
-# --------------------------------------------------
+# ============================================================
+# FOOTER
+# ============================================================
 
 st.markdown("---")
 
@@ -365,3 +448,4 @@ st.caption(
     "AI-Powered Image Content Generator | "
     "Built with Python, Streamlit, BLIP & Groq AI"
 )
+
