@@ -10,6 +10,12 @@
 
 </p>
 
+### 🚀 Live Demo
+
+[Open the Live Demo](https://ai-powered-image-caption-generator-4dkems5s7atpryuabmqe85.streamlit.app/)
+
+---
+
 An AI-powered application that generates captions from uploaded images using the **BLIP Image Captioning** model and enhances them with **Groq LLM**. Users can customize captions based on style, tone, and language while generating multiple caption suggestions through an interactive Streamlit interface.
 
 ---
